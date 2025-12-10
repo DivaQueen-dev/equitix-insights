@@ -25,6 +25,8 @@ export default {
         foreground: "hsl(var(--foreground))",
         surface: "hsl(var(--surface))",
         panel: "hsl(var(--panel))",
+        gold: "hsl(var(--accent-gold))",
+        emerald: "hsl(var(--accent-emerald))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -48,7 +50,8 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
-          green: "hsl(var(--accent-green))",
+          gold: "hsl(var(--accent-gold))",
+          emerald: "hsl(var(--accent-emerald))",
           graph: "hsl(var(--accent-graph))",
         },
         popover: {
@@ -90,6 +93,10 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.5" },
         },
+        glow: {
+          "0%, 100%": { boxShadow: "0 0 20px -5px hsl(var(--accent-gold) / 0.3)" },
+          "50%": { boxShadow: "0 0 40px -5px hsl(var(--accent-gold) / 0.5)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -97,6 +104,7 @@ export default {
         "fade-up": "fade-up 0.5s ease-out forwards",
         "fade-in": "fade-in 0.4s ease-out forwards",
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        glow: "glow 2s ease-in-out infinite",
       },
     },
   },
