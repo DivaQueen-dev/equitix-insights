@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp, BarChart3, BookOpen, Users, Shield, Zap } from "lucide-react";
+import { ArrowRight, TrendingUp, BarChart3, BookOpen, Users, Shield, Zap, ChevronRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import gsap from "gsap";
 
@@ -83,39 +83,54 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
+      {/* Simple Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <nav className="container mx-auto px-6 h-16 flex items-center justify-between">
+          <Logo size="md" />
+          <div className="flex items-center gap-3">
+            <Link to="/login">
+              <Button variant="ghost" size="sm">Login</Button>
+            </Link>
+            <Link to="/signup">
+              <Button size="sm" className="gradient-gold text-primary-foreground">Sign Up</Button>
+            </Link>
+          </div>
+        </nav>
+      </header>
+
       {/* Hero Section */}
       <motion.section
         ref={heroRef}
         style={{ opacity: heroOpacity, scale: heroScale }}
-        className="relative min-h-[95vh] flex items-center justify-center overflow-hidden"
+        className="relative min-h-[95vh] flex items-center justify-center overflow-hidden pt-16"
       >
-        {/* Background Grid */}
-        <div className="absolute inset-0 grid-pattern opacity-40" />
+        {/* Background */}
+        <div className="absolute inset-0 grid-pattern opacity-30" />
         <div className="absolute inset-0 gradient-radial" />
         
-        {/* Floating Elements - Indian Market inspired */}
+        {/* Floating Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
             animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/4 left-[10%] w-72 h-72 bg-accent-gold/10 rounded-full blur-3xl"
+            className="absolute top-1/4 left-[10%] w-72 h-72 bg-gold/10 rounded-full blur-3xl"
           />
           <motion.div
             animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-1/4 right-[10%] w-80 h-80 bg-success/10 rounded-full blur-3xl"
+            className="absolute bottom-1/4 right-[10%] w-80 h-80 bg-emerald/10 rounded-full blur-3xl"
           />
           
-          {/* Decorative chart line */}
+          {/* Chart line decoration */}
           <svg
-            className="absolute bottom-32 left-0 right-0 w-full h-32 opacity-10"
+            className="absolute bottom-32 left-0 right-0 w-full h-32 opacity-20"
             viewBox="0 0 1200 100"
             preserveAspectRatio="none"
           >
             <path
               d="M0 80 L100 60 L200 70 L300 40 L400 50 L500 30 L600 45 L700 25 L800 35 L900 15 L1000 25 L1100 10 L1200 20"
-              stroke="hsl(var(--foreground))"
+              stroke="hsl(var(--accent-gold))"
               strokeWidth="2"
               fill="none"
             />
@@ -124,14 +139,14 @@ export default function Landing() {
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            {/* Logo Badge */}
+            {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="flex justify-center mb-8"
             >
-              <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-border bg-background/50 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-gold/30 bg-gold/5 backdrop-blur-sm">
                 <span className="w-2 h-2 rounded-full bg-success animate-pulse-soft" />
                 <span className="text-sm text-muted-foreground">
                   Trusted by 50,000+ investors across India
@@ -145,7 +160,7 @@ export default function Landing() {
             >
               Invest Smarter.
               <br />
-              <span className="text-muted-foreground">Predict Better.</span>
+              <span className="gradient-text">Predict Better.</span>
             </h1>
 
             <p
@@ -158,13 +173,13 @@ export default function Landing() {
 
             <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center opacity-0">
               <Link to="/signup">
-                <Button size="lg" className="h-14 px-10 text-base">
+                <Button size="lg" className="h-14 px-10 text-base gradient-gold text-primary-foreground hover:opacity-90">
                   Sign Up
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
               <Link to="/login">
-                <Button variant="outline" size="lg" className="h-14 px-10 text-base">
+                <Button variant="outline" size="lg" className="h-14 px-10 text-base border-gold/30 hover:bg-gold/5">
                   Login
                 </Button>
               </Link>
@@ -251,10 +266,10 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="p-8 rounded-2xl bg-background border border-border hover:border-foreground/20 transition-colors hover-lift"
+                className="p-8 rounded-2xl bg-card border border-border hover:border-gold/30 transition-colors hover-lift"
               >
-                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-6">
-                  <span className="text-xl font-semibold">{index + 1}</span>
+                <div className="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6">
+                  <span className="text-xl font-semibold text-gold">{index + 1}</span>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
                 <p className="text-muted-foreground">{item.description}</p>
@@ -290,10 +305,10 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="group p-8 rounded-2xl border border-border bg-card hover:bg-muted/50 transition-all duration-300 hover-lift"
+                className="group p-8 rounded-2xl border border-border bg-card hover:bg-muted/30 hover:border-gold/30 transition-all duration-300 hover-lift"
               >
-                <div className="w-12 h-12 rounded-xl bg-muted group-hover:bg-background flex items-center justify-center mb-6 transition-colors">
-                  <feature.icon className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-xl bg-gold/10 group-hover:bg-gold/20 flex items-center justify-center mb-6 transition-colors">
+                  <feature.icon className="w-6 h-6 text-gold" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">{feature.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
@@ -304,8 +319,12 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 bg-foreground text-background">
-        <div className="container mx-auto px-6">
+      <section className="py-32 bg-foreground text-background relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-gold rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-emerald rounded-full blur-3xl" />
+        </div>
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -342,6 +361,18 @@ export default function Landing() {
           </motion.div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="py-12 border-t border-border">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <Logo size="sm" />
+            <p className="text-sm text-muted-foreground">
+              2024 Equitix. For educational purposes only. Not financial advice.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

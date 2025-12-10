@@ -1,10 +1,18 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Logo } from "@/components/Logo";
 
-const footerLinks = {
+const publicLinks = [
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+  { label: "Terms", href: "/terms" },
+];
+
+const protectedLinks = {
   Product: [
-    { label: "Features", href: "/features" },
-    { label: "Stock Analysis", href: "/analysis" },
     { label: "Dashboard", href: "/dashboard" },
+    { label: "Portfolio", href: "/portfolio" },
+    { label: "Analysis", href: "/analysis" },
     { label: "Simulator", href: "/simulator" },
   ],
   Learn: [
@@ -19,45 +27,59 @@ const footerLinks = {
   ],
   Legal: [
     { label: "Terms & Conditions", href: "/terms" },
-    { label: "Privacy Policy", href: "/terms" },
   ],
 };
 
 export function Footer() {
+  const { isAuthenticated, hasAcceptedTerms } = useAuth();
+  const isProtected = isAuthenticated && hasAcceptedTerms;
+
   return (
     <footer className="border-t border-border bg-surface">
       <div className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12">
-          <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
-                <span className="text-background font-semibold text-sm">E</span>
-              </div>
-              <span className="font-semibold text-lg tracking-tight">Equitix</span>
-            </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Invest smarter with data-driven insights and educational resources.
-            </p>
-          </div>
-
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h4 className="font-medium text-sm mb-4">{category}</h4>
-              <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      to={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+        {isProtected ? (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12">
+            <div className="col-span-2 md:col-span-1">
+              <Logo size="sm" className="mb-4" />
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Invest smarter with data-driven insights and educational resources.
+              </p>
             </div>
-          ))}
-        </div>
+
+            {Object.entries(protectedLinks).map(([category, links]) => (
+              <div key={category}>
+                <h4 className="font-medium text-sm mb-4">{category}</h4>
+                <ul className="space-y-3">
+                  {links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        to={link.href}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <Logo size="sm" />
+            <div className="flex gap-6">
+              {publicLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="border-t border-border mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
