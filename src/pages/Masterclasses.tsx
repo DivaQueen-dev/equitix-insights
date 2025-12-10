@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, Clock, User, CheckCircle, Play, ChevronRight, Mail, Send } from "lucide-react";
+import { X, Clock, User, CheckCircle, Play, Mail, Send, Loader2, Sparkles } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { useToast } from "@/hooks/use-toast";
+import { sendEnrollmentEmail } from "@/services/emailService";
+import { AnimatedCard, StaggerContainer, StaggerItem } from "@/components/ui/animated-card";
+import { FloatingOrbs } from "@/components/ui/glow-effect";
 import "swiper/css";
 
 interface Chapter {
@@ -142,28 +145,36 @@ export default function Masterclasses() {
     
     setIsEnrolling(true);
     
-    // Simulate email sending
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Store enrollment
-    const enrollments = JSON.parse(localStorage.getItem("equitix-enrollments") || "[]");
-    enrollments.push({
-      classId: enrollingClass.id,
-      className: enrollingClass.topic,
-      email: enrollEmail,
-      enrolledAt: new Date().toISOString()
-    });
-    localStorage.setItem("equitix-enrollments", JSON.stringify(enrollments));
-    
-    toast({
-      title: "Enrollment Successful",
-      description: `Confirmation email sent to ${enrollEmail} for "${enrollingClass.topic}"`,
-    });
-    
-    setIsEnrolling(false);
-    setShowEnrollModal(false);
-    setEnrollEmail("");
-    setEnrollingClass(null);
+    try {
+      await sendEnrollmentEmail(enrollEmail, enrollingClass.topic, enrollingClass.instructor);
+      
+      // Store enrollment
+      const enrollments = JSON.parse(localStorage.getItem("equitix-enrollments") || "[]");
+      enrollments.push({
+        classId: enrollingClass.id,
+        className: enrollingClass.topic,
+        email: enrollEmail,
+        enrolledAt: new Date().toISOString()
+      });
+      localStorage.setItem("equitix-enrollments", JSON.stringify(enrollments));
+      
+      toast({
+        title: "Enrollment Successful!",
+        description: `Confirmation sent to ${enrollEmail} for "${enrollingClass.topic}"`,
+      });
+      
+      setShowEnrollModal(false);
+      setEnrollEmail("");
+      setEnrollingClass(null);
+    } catch (error) {
+      toast({
+        title: "Enrollment Failed",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsEnrolling(false);
+    }
   };
 
   const recommendedClasses = masterclasses.filter(
@@ -180,31 +191,65 @@ export default function Masterclasses() {
   };
 
   return (
-    <div className="min-h-screen py-24">
-      <div className="container mx-auto px-6">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mb-16">
-          <h1 className="text-4xl md:text-5xl font-semibold mb-4">Masterclasses</h1>
-          <p className="text-lg text-muted-foreground">Learn directly from seasoned market experts.</p>
+    <div className="min-h-screen py-24 relative overflow-hidden">
+      <FloatingOrbs className="opacity-30" />
+      
+      <div className="container mx-auto px-6 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }} 
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-3xl mb-16"
+        >
+          <motion.span 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/10 text-gold text-sm font-medium mb-6"
+          >
+            <Sparkles className="w-4 h-4" />
+            Expert-Led Courses
+          </motion.span>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">Masterclasses</h1>
+          <p className="text-lg text-muted-foreground">Learn directly from seasoned market experts and transform your investing skills.</p>
         </motion.div>
 
         {/* Recommended Section */}
         {recommendedClasses.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-16">
-            <h2 className="text-xl font-semibold mb-6">Recommended for You</h2>
-            <Swiper modules={[Autoplay]} spaceBetween={16} slidesPerView="auto" autoplay={{ delay: 5000, disableOnInteraction: false }} className="!overflow-visible">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.2 }} 
+            className="mb-16"
+          >
+            <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-gold" />
+              Recommended for You
+            </h2>
+            <Swiper 
+              modules={[Autoplay]} 
+              spaceBetween={20} 
+              slidesPerView="auto" 
+              autoplay={{ delay: 5000, disableOnInteraction: false }} 
+              className="!overflow-visible"
+            >
               {recommendedClasses.map((mc) => (
                 <SwiperSlide key={mc.id} className="!w-80">
-                  <div onClick={() => setSelectedClass(mc)} className="rounded-2xl border border-border bg-card hover:border-gold/30 transition-all cursor-pointer group overflow-hidden">
-                    <div className="relative h-40 overflow-hidden">
-                      <img src={mc.image} alt={mc.topic} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+                  <motion.div 
+                    whileHover={{ y: -8, scale: 1.02 }}
+                    onClick={() => setSelectedClass(mc)} 
+                    className="rounded-2xl border border-border bg-card hover:border-gold/30 transition-all cursor-pointer group overflow-hidden shadow-lg shadow-black/5"
+                  >
+                    <div className="relative h-44 overflow-hidden">
+                      <img src={mc.image} alt={mc.topic} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
                     </div>
                     <div className="p-5">
                       <Badge className={getDifficultyColor(mc.difficulty)}>{mc.difficulty}</Badge>
                       <h3 className="font-semibold mt-3 mb-1">{mc.topic}</h3>
                       <p className="text-sm text-muted-foreground">{mc.instructor}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -212,48 +257,64 @@ export default function Masterclasses() {
         )}
 
         {/* All Masterclasses Grid */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.3 }}
+        >
           <h2 className="text-xl font-semibold mb-6">All Masterclasses</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {masterclasses.map((mc, i) => (
-              <motion.div
-                key={mc.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="rounded-2xl border border-border bg-card hover:border-gold/30 transition-all cursor-pointer group relative overflow-hidden"
-              >
-                {completedClasses.includes(mc.id) && (
-                  <div className="absolute top-4 right-4 z-10">
-                    <CheckCircle className="w-5 h-5 text-success" />
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" staggerDelay={0.1}>
+            {masterclasses.map((mc) => (
+              <StaggerItem key={mc.id}>
+                <AnimatedCard className="relative overflow-hidden group">
+                  {completedClasses.includes(mc.id) && (
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute top-4 right-4 z-10"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-success/20 backdrop-blur-sm flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-success" />
+                      </div>
+                    </motion.div>
+                  )}
+                  <div className="relative h-44 overflow-hidden cursor-pointer" onClick={() => setSelectedClass(mc)}>
+                    <img src={mc.image} alt={mc.topic} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                      className="absolute inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center"
+                    >
+                      <div className="w-16 h-16 rounded-full bg-background/90 flex items-center justify-center">
+                        <Play className="w-6 h-6 ml-1" />
+                      </div>
+                    </motion.div>
                   </div>
-                )}
-                <div className="relative h-44 overflow-hidden" onClick={() => setSelectedClass(mc)}>
-                  <img src={mc.image} alt={mc.topic} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
-                </div>
-                <div className="p-5" onClick={() => setSelectedClass(mc)}>
-                  <Badge className={getDifficultyColor(mc.difficulty)}>{mc.difficulty}</Badge>
-                  <h3 className="font-semibold mt-3 mb-1">{mc.topic}</h3>
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{mc.description}</p>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><User className="w-3 h-3" />{mc.instructor}</span>
-                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{mc.duration}</span>
+                  <div className="p-5 cursor-pointer" onClick={() => setSelectedClass(mc)}>
+                    <Badge className={getDifficultyColor(mc.difficulty)}>{mc.difficulty}</Badge>
+                    <h3 className="font-semibold mt-3 mb-1">{mc.topic}</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{mc.description}</p>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><User className="w-3 h-3" />{mc.instructor}</span>
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{mc.duration}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="px-5 pb-5 flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => setSelectedClass(mc)}>
-                    View Class
-                  </Button>
-                  <Button size="sm" className="flex-1 gradient-gold text-primary-foreground" onClick={() => handleEnroll(mc)}>
-                    <Mail className="w-4 h-4 mr-1" />
-                    Enroll
-                  </Button>
-                </div>
-              </motion.div>
+                  <div className="px-5 pb-5 flex gap-2">
+                    <Button variant="outline" size="sm" className="flex-1 hover:bg-muted" onClick={() => setSelectedClass(mc)}>
+                      View Details
+                    </Button>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex-1">
+                      <Button size="sm" className="w-full gradient-gold text-primary-foreground shadow-lg shadow-gold/20" onClick={() => handleEnroll(mc)}>
+                        <Mail className="w-4 h-4 mr-1" />
+                        Enroll
+                      </Button>
+                    </motion.div>
+                  </div>
+                </AnimatedCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </motion.div>
       </div>
 
@@ -264,31 +325,37 @@ export default function Masterclasses() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setSelectedClass(null)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-card border border-border rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto"
+              className="bg-card border border-border rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
             >
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-56 overflow-hidden">
                 <img src={selectedClass.image} alt={selectedClass.topic} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
-                <button onClick={() => setSelectedClass(null)} className="absolute top-4 right-4 p-2 bg-background/80 hover:bg-background rounded-lg transition-colors">
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
+                <motion.button 
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setSelectedClass(null)} 
+                  className="absolute top-4 right-4 p-3 bg-background/80 backdrop-blur-sm hover:bg-background rounded-xl transition-colors"
+                >
                   <X className="w-5 h-5" />
-                </button>
+                </motion.button>
               </div>
               
-              <div className="p-6 -mt-12 relative">
+              <div className="p-8 -mt-16 relative">
                 <Badge className={getDifficultyColor(selectedClass.difficulty)}>{selectedClass.difficulty}</Badge>
-                <h2 className="text-2xl font-semibold mt-2">{selectedClass.topic}</h2>
+                <h2 className="text-2xl font-bold mt-3">{selectedClass.topic}</h2>
                 <p className="text-muted-foreground">{selectedClass.instructor}</p>
               </div>
 
-              <div className="p-6 pt-0 space-y-8">
+              <div className="p-8 pt-0 space-y-8">
                 <div>
                   <h3 className="font-semibold mb-3">Overview</h3>
                   <p className="text-muted-foreground leading-relaxed">{selectedClass.overview}</p>
@@ -296,12 +363,18 @@ export default function Masterclasses() {
 
                 <div>
                   <h3 className="font-semibold mb-3">What You'll Learn</h3>
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {selectedClass.whatYouLearn.map((item, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm">
-                        <div className="w-1.5 h-1.5 rounded-full bg-gold mt-2" />
+                      <motion.li 
+                        key={i} 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="flex items-start gap-3 text-sm"
+                      >
+                        <div className="w-2 h-2 rounded-full bg-gold mt-2 shrink-0" />
                         {item}
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
                 </div>
@@ -310,25 +383,35 @@ export default function Masterclasses() {
                   <h3 className="font-semibold mb-3">Chapters ({selectedClass.chapters.length})</h3>
                   <div className="space-y-2">
                     {selectedClass.chapters.map((chapter, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
-                        <div className="flex items-center gap-3">
+                      <motion.div 
+                        key={i} 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        whileHover={{ x: 5 }}
+                        className="flex items-center justify-between p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
                           <div className="w-8 h-8 rounded-lg bg-card flex items-center justify-center text-sm font-medium">
                             {i + 1}
                           </div>
                           <span className="text-sm font-medium">{chapter.title}</span>
                         </div>
                         <span className="text-xs text-muted-foreground">{chapter.duration}</span>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
 
                 <div className="flex gap-3 pt-4 border-t border-border">
-                  <Button className="flex-1 gradient-gold text-primary-foreground">
-                    <Play className="w-4 h-4 mr-2" />Start Class
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex-1">
+                    <Button className="w-full h-12 gradient-gold text-primary-foreground shadow-lg shadow-gold/20">
+                      <Play className="w-4 h-4 mr-2" />Start Class
+                    </Button>
+                  </motion.div>
                   <Button
                     variant={completedClasses.includes(selectedClass.id) ? "default" : "outline"}
+                    className="h-12"
                     onClick={() => toggleComplete(selectedClass.id)}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
@@ -348,24 +431,28 @@ export default function Masterclasses() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setShowEnrollModal(false)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-card border border-border rounded-2xl max-w-md w-full p-6"
+              className="bg-card border border-border rounded-3xl max-w-md w-full p-8 shadow-2xl"
             >
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-semibold">Enroll in Masterclass</h2>
-                  <p className="text-sm text-muted-foreground mt-1">{enrollingClass.topic}</p>
-                </div>
-                <button onClick={() => setShowEnrollModal(false)} className="p-2 hover:bg-muted rounded-lg transition-colors">
-                  <X className="w-5 h-5" />
-                </button>
+              <div className="text-center mb-8">
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", delay: 0.1 }}
+                  className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center mx-auto mb-4"
+                >
+                  <Mail className="w-8 h-8 text-gold" />
+                </motion.div>
+                <h3 className="text-2xl font-bold mb-2">Enroll in Masterclass</h3>
+                <p className="text-muted-foreground text-sm">Enter your email to enroll in <span className="font-medium text-foreground">"{enrollingClass.topic}"</span></p>
               </div>
 
               <div className="space-y-4">
@@ -374,30 +461,41 @@ export default function Masterclasses() {
                   <Input
                     id="enroll-email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="you@example.com"
                     value={enrollEmail}
                     onChange={(e) => setEnrollEmail(e.target.value)}
                     className="h-12"
+                    disabled={isEnrolling}
                   />
                 </div>
                 
-                <p className="text-xs text-muted-foreground">
-                  You will receive a confirmation email with class details and access instructions.
-                </p>
-
-                <Button 
-                  onClick={submitEnrollment} 
-                  className="w-full h-12 gradient-gold text-primary-foreground"
-                  disabled={!enrollEmail || isEnrolling}
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    className="w-full h-12 gradient-gold text-primary-foreground shadow-lg shadow-gold/20"
+                    onClick={submitEnrollment}
+                    disabled={!enrollEmail || isEnrolling}
+                  >
+                    {isEnrolling ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Enrolling...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Confirm Enrollment
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
+                
+                <Button
+                  variant="ghost"
+                  className="w-full"
+                  onClick={() => setShowEnrollModal(false)}
+                  disabled={isEnrolling}
                 >
-                  {isEnrolling ? (
-                    <>Sending confirmation...</>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 mr-2" />
-                      Confirm Enrollment
-                    </>
-                  )}
+                  Cancel
                 </Button>
               </div>
             </motion.div>
