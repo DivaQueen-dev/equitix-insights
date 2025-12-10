@@ -3,12 +3,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Bell, Zap, Shield } from "lucide-react";
 
+const TELEGRAM_URL = "https://t.me/Lvtehelp_bot";
+
 export default function Telegram() {
+  const handleClick = (e: React.MouseEvent) => {
+    // debug: show event in console
+    // eslint-disable-next-line no-console
+    console.log("Telegram button clicked", e);
+
+    // fallback navigation for environments that block window.open
+    try {
+      // try to open in new window/tab first
+      const w = window.open(TELEGRAM_URL, "_blank", "noopener,noreferrer");
+      if (!w) {
+        // if popup blocked, fall back to changing location
+        window.location.href = TELEGRAM_URL;
+      }
+    } catch (err) {
+      // fallback always
+      window.location.href = TELEGRAM_URL;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-16 max-w-3xl">
-        
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -24,7 +43,6 @@ export default function Telegram() {
           </p>
         </motion.div>
 
-        {/* Feature Cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -48,7 +66,6 @@ export default function Telegram() {
           ))}
         </motion.div>
 
-        {/* Telegram Connect */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -63,17 +80,23 @@ export default function Telegram() {
                 Click the button below to open our Telegram bot and link your account. You will receive a confirmation message once connected.
               </p>
 
-              {/* FIXED TELEGRAM BUTTON — ALWAYS WORKS */}
-              <Button asChild size="xl" className="w-full max-w-xs mx-auto">
-                <a
-                  href="https://t.me/Lvtehelp_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+              {/* Anchor wraps the Button to ensure native link behaviour */}
+              <a
+                href={TELEGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  // run fallback after the native action so we still get normal anchor behavior
+                  // small timeout gives anchor a chance to run; still logs for debugging
+                  setTimeout(() => handleClick(e as unknown as React.MouseEvent), 50);
+                }}
+                className="inline-block"
+              >
+                <Button size="xl" className="w-full max-w-xs mx-auto">
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Open Telegram Bot
-                </a>
-              </Button>
+                </Button>
+              </a>
 
               <div className="p-4 bg-panel rounded-lg">
                 <p className="text-sm text-muted-foreground">
