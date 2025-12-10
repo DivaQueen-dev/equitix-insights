@@ -59,7 +59,7 @@ export default function Telegram() {
                 Click the button below to open our Telegram bot and link your account. You will receive a confirmation message once connected.
               </p>
               
-              <Button size="xl" className="w-full max-w-xs" onClick={() => window.open("https://t.me/equitix_bot", "_blank")}>
+              <Button size="xl" className="w-full max-w-xs" onClick={() => window.open("https://t.me/Lvtehelp_bot")}>
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Open Telegram Bot
               </Button>
