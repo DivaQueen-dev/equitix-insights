@@ -7,6 +7,8 @@ export default function Telegram() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-16 max-w-3xl">
+        
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -22,6 +24,7 @@ export default function Telegram() {
           </p>
         </motion.div>
 
+        {/* Feature Cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -32,7 +35,7 @@ export default function Telegram() {
             { icon: Bell, title: "Price Alerts", description: "Get notified when stocks hit your target prices" },
             { icon: Zap, title: "Daily Summaries", description: "Receive market overviews each morning" },
             { icon: Shield, title: "Secure", description: "Your data stays private and encrypted" },
-          ].map((item, index) => (
+          ].map((item) => (
             <Card key={item.title} variant="flat" padding="lg">
               <CardContent className="text-center">
                 <div className="w-10 h-10 rounded-lg bg-panel flex items-center justify-center mx-auto mb-3">
@@ -45,6 +48,7 @@ export default function Telegram() {
           ))}
         </motion.div>
 
+        {/* Telegram Connect */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,10 +62,17 @@ export default function Telegram() {
               <p className="text-muted-foreground">
                 Click the button below to open our Telegram bot and link your account. You will receive a confirmation message once connected.
               </p>
-              
-              <Button size="xl" className="w-full max-w-xs" onClick={() => window.open("https://t.me/Lvtehelp_bot")}>
-                <MessageCircle className="w-5 h-5 mr-2" />
-                Open Telegram Bot
+
+              {/* FIXED TELEGRAM BUTTON — ALWAYS WORKS */}
+              <Button asChild size="xl" className="w-full max-w-xs mx-auto">
+                <a
+                  href="https://t.me/Lvtehelp_bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Open Telegram Bot
+                </a>
               </Button>
 
               <div className="p-4 bg-panel rounded-lg">
