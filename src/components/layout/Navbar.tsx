@@ -7,13 +7,9 @@ import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 
-const publicNavLinks = [
-  { href: "/login", label: "Login" },
-  { href: "/signup", label: "Sign Up" },
-];
-
 const protectedNavLinks = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/portfolio", label: "Portfolio" },
   { href: "/analysis", label: "Analysis" },
   { href: "/guide", label: "Learn" },
   { href: "/masterclasses", label: "Masterclasses" },
@@ -30,8 +26,8 @@ export function Navbar() {
   const isProtected = isAuthenticated && hasAcceptedTerms;
   const navLinks = isProtected ? protectedNavLinks : [];
 
-  // Hide navbar on auth pages
-  const isAuthPage = ["/login", "/signup"].includes(location.pathname);
+  // Hide navbar on auth pages and landing
+  const hideNavbar = ["/login", "/signup", "/"].includes(location.pathname);
   
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +41,7 @@ export function Navbar() {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  if (isAuthPage) return null;
+  if (hideNavbar) return null;
 
   return (
     <>
@@ -56,8 +52,8 @@ export function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           isScrolled
-            ? "bg-background/80 backdrop-blur-xl border-b border-border/50"
-            : "bg-transparent"
+            ? "bg-background/90 backdrop-blur-xl border-b border-border/50 shadow-sm"
+            : "bg-background/50 backdrop-blur-sm"
         )}
       >
         <nav className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -84,18 +80,7 @@ export function Navbar() {
           )}
 
           <div className="flex items-center gap-3">
-            {!isProtected ? (
-              <>
-                <Link to="/login" className="hidden sm:block">
-                  <Button variant="ghost" size="sm">
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/signup" className="hidden sm:block">
-                  <Button size="sm">Sign Up</Button>
-                </Link>
-              </>
-            ) : (
+            {isProtected && (
               <Link to="/profile" className="hidden sm:block">
                 <Button variant="outline" size="sm">
                   Profile
@@ -107,19 +92,6 @@ export function Navbar() {
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="lg:hidden p-2 hover:bg-muted rounded-lg transition-colors"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </button>
-            )}
-
-            {!isProtected && (
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="sm:hidden p-2 hover:bg-muted rounded-lg transition-colors"
               >
                 {isMobileMenuOpen ? (
                   <X className="w-5 h-5" />
@@ -144,7 +116,7 @@ export function Navbar() {
           >
             <div className="bg-background/95 backdrop-blur-xl border-b border-border mx-4 rounded-xl shadow-lg overflow-hidden">
               <div className="p-4 space-y-1">
-                {isProtected ? (
+                {isProtected && (
                   <>
                     {navLinks.map((link) => (
                       <Link
@@ -168,17 +140,6 @@ export function Navbar() {
                       </Link>
                     </div>
                   </>
-                ) : (
-                  <div className="flex gap-2">
-                    <Link to="/login" className="flex-1">
-                      <Button variant="outline" className="w-full">
-                        Login
-                      </Button>
-                    </Link>
-                    <Link to="/signup" className="flex-1">
-                      <Button className="w-full">Sign Up</Button>
-                    </Link>
-                  </div>
                 )}
               </div>
             </div>
