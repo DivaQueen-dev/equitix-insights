@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,8 +15,10 @@ import {
   User,
   ChevronRight,
   Bell,
-  Settings,
   LogOut,
+  BookOpen,
+  Users,
+  Bot,
 } from "lucide-react";
 import {
   XAxis,
@@ -26,7 +28,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import { sampleStocks, sampleNews, sectorData, generateStockHistory } from "@/data/stocks";
+import { sampleStocks, generateStockHistory } from "@/data/stocks";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -37,26 +39,18 @@ import "swiper/css";
 const miniChartData = generateStockHistory(100, 30).slice(-14);
 
 const categories = [
-  { name: "Technology", icon: "T", change: 2.4 },
-  { name: "Healthcare", icon: "H", change: 1.2 },
-  { name: "Finance", icon: "F", change: -0.8 },
-  { name: "Energy", icon: "E", change: 3.1 },
-  { name: "Consumer", icon: "C", change: 0.5 },
+  { name: "NIFTY 50", icon: "N", change: 1.2, value: "24,850" },
+  { name: "SENSEX", icon: "S", change: 0.9, value: "81,500" },
+  { name: "Bank NIFTY", icon: "B", change: -0.4, value: "52,100" },
+  { name: "IT Index", icon: "IT", change: 2.1, value: "38,200" },
+  { name: "Pharma", icon: "PH", change: 1.5, value: "21,800" },
 ];
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const { watchlist, addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
-  const { user, isAuthenticated, hasAcceptedTerms, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-    } else if (!hasAcceptedTerms) {
-      navigate("/terms-accept");
-    }
-  }, [isAuthenticated, hasAcceptedTerms, navigate]);
 
   const filteredStocks = useMemo(() => {
     if (!searchQuery) return sampleStocks;
@@ -83,8 +77,6 @@ export default function Dashboard() {
     return "Good evening";
   };
 
-  if (!isAuthenticated) return null;
-
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
@@ -109,9 +101,6 @@ export default function Dashboard() {
             <Button variant="outline" size="icon" className="rounded-xl">
               <Bell className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="icon" className="rounded-xl">
-              <Settings className="w-4 h-4" />
-            </Button>
             <Link to="/profile">
               <Button variant="outline" className="rounded-xl">
                 Profile
@@ -131,7 +120,7 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Category Carousel */}
+        {/* Index Carousel */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -148,19 +137,21 @@ export default function Dashboard() {
             {categories.map((cat) => (
               <SwiperSlide key={cat.name} className="!w-auto">
                 <div className="p-4 pr-8 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center font-semibold">
+                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center font-semibold text-sm">
                     {cat.icon}
                   </div>
                   <div>
                     <div className="font-medium text-sm">{cat.name}</div>
-                    <div
-                      className={cn(
-                        "text-xs",
-                        cat.change >= 0 ? "text-success" : "text-destructive"
-                      )}
-                    >
-                      {cat.change >= 0 ? "+" : ""}
-                      {cat.change}%
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{cat.value}</span>
+                      <span
+                        className={cn(
+                          "text-xs font-medium",
+                          cat.change >= 0 ? "text-success" : "text-destructive"
+                        )}
+                      >
+                        {cat.change >= 0 ? "+" : ""}{cat.change}%
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -235,7 +226,7 @@ export default function Dashboard() {
                           fontSize={11}
                           tickLine={false}
                           axisLine={false}
-                          tickFormatter={(value) => `$${value}`}
+                          tickFormatter={(value) => `₹${value}`}
                         />
                         <Tooltip
                           contentStyle={{
@@ -259,7 +250,7 @@ export default function Dashboard() {
               </Card>
             </motion.div>
 
-            {/* Market Insights */}
+            {/* Trending Stocks */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -280,7 +271,7 @@ export default function Dashboard() {
                         to={`/stock/${stock.symbol}`}
                         className="group"
                       >
-                        <div className="p-4 rounded-xl border border-border bg-card hover:bg-muted/50 transition-all flex items-center justify-between">
+                        <div className="p-4 rounded-xl border border-border bg-card hover:bg-muted/50 transition-all flex items-center justify-between hover-lift">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center font-semibold text-sm">
                               {stock.symbol.slice(0, 2)}
@@ -311,7 +302,7 @@ export default function Dashboard() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-medium">${stock.price.toFixed(2)}</div>
+                            <div className="font-medium">₹{stock.price.toFixed(2)}</div>
                             <div
                               className={cn(
                                 "text-xs flex items-center gap-1 justify-end",
@@ -372,7 +363,7 @@ export default function Dashboard() {
                         </div>
                         <div className="flex items-center gap-6">
                           <div className="text-right">
-                            <div className="font-medium">${stock.price.toFixed(2)}</div>
+                            <div className="font-medium">₹{stock.price.toFixed(2)}</div>
                             <div
                               className={cn(
                                 "text-xs",
@@ -404,12 +395,12 @@ export default function Dashboard() {
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: "Analysis", href: "/analysis", icon: BarChart3 },
-                  { label: "Simulator", href: "/simulator", icon: Activity },
-                  { label: "Learn", href: "/guide", icon: TrendingUp },
-                  { label: "Community", href: "/community", icon: Star },
+                  { label: "Learn", href: "/guide", icon: BookOpen },
+                  { label: "Community", href: "/community", icon: Users },
+                  { label: "Telegram", href: "/bot", icon: Bot },
                 ].map((item) => (
                   <Link key={item.href} to={item.href}>
-                    <div className="p-4 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors text-center">
+                    <div className="p-4 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors text-center hover-lift">
                       <item.icon className="w-5 h-5 mx-auto mb-2 text-muted-foreground" />
                       <span className="text-sm font-medium">{item.label}</span>
                     </div>
@@ -438,25 +429,27 @@ export default function Dashboard() {
                     </p>
                   ) : (
                     <div className="space-y-3">
-                      {watchlistStocks.map((stock) => (
+                      {watchlistStocks.slice(0, 5).map((stock) => (
                         <Link
                           key={stock.symbol}
                           to={`/stock/${stock.symbol}`}
-                          className="flex items-center justify-between p-3 rounded-xl hover:bg-muted transition-colors"
+                          className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors"
                         >
-                          <div>
-                            <div className="font-medium">{stock.symbol}</div>
-                            <div className="text-xs text-muted-foreground">{stock.name}</div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-xs font-semibold">
+                              {stock.symbol.slice(0, 2)}
+                            </div>
+                            <span className="font-medium text-sm">{stock.symbol}</span>
                           </div>
                           <div className="text-right">
-                            <div className="text-sm font-medium">${stock.price.toFixed(2)}</div>
+                            <div className="text-sm font-medium">₹{stock.price.toFixed(2)}</div>
                             <div
                               className={cn(
                                 "text-xs",
                                 stock.change >= 0 ? "text-success" : "text-destructive"
                               )}
                             >
-                              {stock.change >= 0 ? "+" : ""}
+                              {stock.changePercent >= 0 ? "+" : ""}
                               {stock.changePercent.toFixed(2)}%
                             </div>
                           </div>
@@ -468,7 +461,7 @@ export default function Dashboard() {
               </Card>
             </motion.div>
 
-            {/* Sector Performance */}
+            {/* Market Insight */}
             <motion.div
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -476,64 +469,18 @@ export default function Dashboard() {
             >
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Sector Performance</CardTitle>
+                  <CardTitle className="text-lg">Market Insight</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {sectorData.map((sector) => (
-                      <div
-                        key={sector.name}
-                        className="flex items-center justify-between p-3 rounded-xl bg-muted/50"
-                      >
-                        <span className="text-sm font-medium">{sector.name}</span>
-                        <span
-                          className={cn(
-                            "text-sm font-medium",
-                            sector.change >= 0 ? "text-success" : "text-destructive"
-                          )}
-                        >
-                          {sector.change >= 0 ? "+" : ""}
-                          {sector.change.toFixed(1)}%
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* News */}
-            <motion.div
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.35 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Latest News</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {sampleNews.slice(0, 3).map((news) => (
-                      <div key={news.id} className="pb-4 border-b border-border last:border-0 last:pb-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge
-                            variant={
-                              news.sentiment === "positive"
-                                ? "default"
-                                : news.sentiment === "negative"
-                                ? "destructive"
-                                : "secondary"
-                            }
-                            className="text-xs"
-                          >
-                            {news.sentiment}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">{news.time}</span>
-                        </div>
-                        <p className="text-sm font-medium leading-snug line-clamp-2">{news.title}</p>
-                      </div>
-                    ))}
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    NIFTY 50 is showing bullish momentum with strong support at 24,500. 
+                    Banking sector leading gains while IT shows mixed signals. 
+                    Watch for RBI policy updates this week.
+                  </p>
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <p className="text-xs text-muted-foreground">
+                      Educational insight only. Not financial advice.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
