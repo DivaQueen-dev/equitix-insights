@@ -3,12 +3,13 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp, BarChart3, BookOpen, Users, Shield, Zap } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import gsap from "gsap";
 
 const stats = [
   { value: "50K+", label: "Active Users" },
   { value: "2.5M+", label: "Analyses Run" },
-  { value: "150+", label: "Markets" },
+  { value: "NSE/BSE", label: "Markets" },
   { value: "99.9%", label: "Uptime" },
 ];
 
@@ -16,17 +17,17 @@ const features = [
   {
     icon: TrendingUp,
     title: "Smart Predictions",
-    description: "Advanced analytics that identify patterns and forecast potential price movements with confidence scores.",
+    description: "Advanced analytics identifying patterns across NSE and BSE with confidence scores.",
   },
   {
     icon: BarChart3,
     title: "Real-time Analysis",
-    description: "Track market movements with live data updates and intelligent trend detection across all major exchanges.",
+    description: "Track NIFTY, SENSEX, and individual stocks with live data updates and trend detection.",
   },
   {
     icon: BookOpen,
     title: "Learning Center",
-    description: "Build investment knowledge with guided lessons designed for beginners to advanced traders.",
+    description: "Build investment knowledge with guided lessons designed for Indian market investors.",
   },
   {
     icon: Users,
@@ -36,12 +37,12 @@ const features = [
   {
     icon: Shield,
     title: "Portfolio Simulator",
-    description: "Test investment strategies with realistic simulations before committing real capital.",
+    description: "Test investment strategies with realistic INR simulations before committing real capital.",
   },
   {
     icon: Zap,
-    title: "Instant Alerts",
-    description: "Get notified of market movements and opportunities via Telegram integration.",
+    title: "Telegram Alerts",
+    description: "Get notified of market movements and opportunities via our Telegram bot integration.",
   },
 ];
 
@@ -87,38 +88,55 @@ export default function Landing() {
       <motion.section
         ref={heroRef}
         style={{ opacity: heroOpacity, scale: heroScale }}
-        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
+        className="relative min-h-[95vh] flex items-center justify-center overflow-hidden"
       >
         {/* Background Grid */}
-        <div className="absolute inset-0 grid-pattern opacity-50" />
+        <div className="absolute inset-0 grid-pattern opacity-40" />
         <div className="absolute inset-0 gradient-radial" />
         
-        {/* Floating Elements */}
+        {/* Floating Elements - Indian Market inspired */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
             animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/4 left-[15%] w-64 h-64 bg-muted/30 rounded-full blur-3xl"
+            className="absolute top-1/4 left-[10%] w-72 h-72 bg-accent-gold/10 rounded-full blur-3xl"
           />
           <motion.div
             animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-1/4 right-[15%] w-80 h-80 bg-muted/20 rounded-full blur-3xl"
+            className="absolute bottom-1/4 right-[10%] w-80 h-80 bg-success/10 rounded-full blur-3xl"
           />
+          
+          {/* Decorative chart line */}
+          <svg
+            className="absolute bottom-32 left-0 right-0 w-full h-32 opacity-10"
+            viewBox="0 0 1200 100"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0 80 L100 60 L200 70 L300 40 L400 50 L500 30 L600 45 L700 25 L800 35 L900 15 L1000 25 L1100 10 L1200 20"
+              stroke="hsl(var(--foreground))"
+              strokeWidth="2"
+              fill="none"
+            />
+          </svg>
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
+            {/* Logo Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-background/50 backdrop-blur-sm mb-8"
+              className="flex justify-center mb-8"
             >
-              <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse-soft" />
-              <span className="text-sm text-muted-foreground">
-                Trusted by 50,000+ investors worldwide
-              </span>
+              <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-border bg-background/50 backdrop-blur-sm">
+                <span className="w-2 h-2 rounded-full bg-success animate-pulse-soft" />
+                <span className="text-sm text-muted-foreground">
+                  Trusted by 50,000+ investors across India
+                </span>
+              </div>
             </motion.div>
 
             <h1
@@ -134,20 +152,20 @@ export default function Landing() {
               ref={subtitleRef}
               className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 opacity-0"
             >
-              Navigate markets with confidence using real-time analysis, 
-              predictive insights, and comprehensive learning resources.
+              Simplifying stock market insights for everyone in India. 
+              Navigate NSE and BSE with confidence using real-time analysis and predictive insights.
             </p>
 
             <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center opacity-0">
               <Link to="/signup">
-                <Button size="lg" className="h-12 px-8 text-base">
-                  Get Started Free
+                <Button size="lg" className="h-14 px-10 text-base">
+                  Sign Up
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
-              <Link to="/features">
-                <Button variant="outline" size="lg" className="h-12 px-8 text-base">
-                  Explore Features
+              <Link to="/login">
+                <Button variant="outline" size="lg" className="h-14 px-10 text-base">
+                  Login
                 </Button>
               </Link>
             </div>
@@ -206,9 +224,9 @@ export default function Landing() {
               What is Equitix?
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Equitix is an intelligent investment platform that combines real-time market 
-              analysis with comprehensive learning resources. We help investors of all levels 
-              understand trends, simulate strategies, and make informed decisions.
+              Equitix is India's intelligent investment platform that combines real-time market 
+              analysis with comprehensive learning resources. Built for the Indian market, we help 
+              investors of all levels understand NSE and BSE trends, simulate strategies, and make informed decisions.
             </p>
           </motion.div>
 
@@ -216,15 +234,15 @@ export default function Landing() {
             {[
               {
                 title: "Data-Driven Insights",
-                description: "Make decisions backed by comprehensive market analysis and intelligent pattern recognition.",
+                description: "Make decisions backed by comprehensive analysis of NIFTY 50, SENSEX, and individual stocks.",
               },
               {
                 title: "Education First",
-                description: "Learn from structured courses, masterclasses, and a supportive community of investors.",
+                description: "Learn from structured courses, masterclasses, and a supportive community of Indian investors.",
               },
               {
                 title: "Risk Management",
-                description: "Understand your exposure with detailed risk metrics and portfolio health assessments.",
+                description: "Understand your exposure with detailed risk metrics and INR-based portfolio assessments.",
               },
             ].map((item, index) => (
               <motion.div
@@ -233,7 +251,7 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="p-8 rounded-2xl bg-background border border-border hover:border-foreground/20 transition-colors"
+                className="p-8 rounded-2xl bg-background border border-border hover:border-foreground/20 transition-colors hover-lift"
               >
                 <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-6">
                   <span className="text-xl font-semibold">{index + 1}</span>
@@ -260,7 +278,7 @@ export default function Landing() {
               Powerful Features
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to analyze markets, learn investing, and build confidence.
+              Everything you need to analyze the Indian market, learn investing, and build confidence.
             </p>
           </motion.div>
 
@@ -272,7 +290,7 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="group p-8 rounded-2xl border border-border bg-card hover:bg-muted/50 transition-all duration-300"
+                className="group p-8 rounded-2xl border border-border bg-card hover:bg-muted/50 transition-all duration-300 hover-lift"
               >
                 <div className="w-12 h-12 rounded-xl bg-muted group-hover:bg-background flex items-center justify-center mb-6 transition-colors">
                   <feature.icon className="w-6 h-6" />
@@ -282,115 +300,6 @@ export default function Landing() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Learning Preview */}
-      <section className="py-32 bg-surface">
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                Learning Center
-              </span>
-              <h2 className="text-3xl md:text-4xl font-semibold mt-4 mb-6">
-                Master the Markets
-              </h2>
-              <p className="text-muted-foreground mb-8 leading-relaxed">
-                From understanding candlestick patterns to advanced risk management, 
-                our structured learning paths help you build real investment skills.
-              </p>
-              <ul className="space-y-4 mb-8">
-                {[
-                  "Beginner-friendly tutorials",
-                  "Expert-led masterclasses",
-                  "Interactive community discussions",
-                  "Practical portfolio exercises",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-foreground" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/guide">
-                <Button variant="outline">
-                  Start Learning
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative"
-            >
-              <div className="aspect-[4/3] rounded-2xl bg-muted border border-border overflow-hidden">
-                <div className="p-6 space-y-4">
-                  {[
-                    { title: "Introduction to Stock Markets", progress: 100 },
-                    { title: "Reading Chart Patterns", progress: 75 },
-                    { title: "Risk Management Basics", progress: 45 },
-                    { title: "Building Your First Portfolio", progress: 0 },
-                  ].map((course, i) => (
-                    <div
-                      key={course.title}
-                      className="p-4 rounded-xl bg-background border border-border"
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">{course.title}</span>
-                        <span className="text-xs text-muted-foreground">{course.progress}%</span>
-                      </div>
-                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-foreground rounded-full transition-all duration-500"
-                          style={{ width: `${course.progress}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Community Preview */}
-      <section className="py-32">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto"
-          >
-            <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              Community
-            </span>
-            <h2 className="text-3xl md:text-4xl font-semibold mt-4 mb-6">
-              Learn Together, Grow Together
-            </h2>
-            <p className="text-muted-foreground mb-12">
-              Join a community of thoughtful investors sharing knowledge, discussing strategies, 
-              and supporting each other on the investment journey.
-            </p>
-            <Link to="/community">
-              <Button>
-                Join the Community
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-          </motion.div>
         </div>
       </section>
 
@@ -408,17 +317,28 @@ export default function Landing() {
               Ready to Invest Smarter?
             </h2>
             <p className="text-lg opacity-70 mb-12">
-              Join thousands of investors who trust Equitix for their market analysis and learning.
+              Join thousands of Indian investors who trust Equitix for their market analysis and learning.
             </p>
-            <Link to="/signup">
-              <Button
-                size="lg"
-                className="h-12 px-8 text-base bg-background text-foreground hover:bg-background/90"
-              >
-                Get Started Free
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/signup">
+                <Button
+                  size="lg"
+                  className="h-14 px-10 text-base bg-background text-foreground hover:bg-background/90"
+                >
+                  Sign Up Free
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+              <Link to="/login">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-14 px-10 text-base border-background/30 text-background hover:bg-background/10"
+                >
+                  Login
+                </Button>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
