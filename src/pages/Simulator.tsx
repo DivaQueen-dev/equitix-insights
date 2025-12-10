@@ -46,10 +46,10 @@ export default function Simulator() {
     addStock,
     removeStock,
     clearPortfolio,
-    getTotalValue,
-    getTotalCost,
-    getTotalProfitLoss,
-    getTotalProfitLossPercent,
+    totalValue,
+    totalCost,
+    totalGain,
+    totalGainPercent,
   } = usePortfolio();
 
   const handleAddStock = () => {
@@ -83,12 +83,12 @@ export default function Simulator() {
 
   const portfolioStats = useMemo(() => {
     return {
-      totalValue: getTotalValue(),
-      totalCost: getTotalCost(),
-      profitLoss: getTotalProfitLoss(),
-      profitLossPercent: getTotalProfitLossPercent(),
+      totalValue: totalValue,
+      totalCost: totalCost,
+      profitLoss: totalGain,
+      profitLossPercent: totalGainPercent,
     };
-  }, [getTotalValue, getTotalCost, getTotalProfitLoss, getTotalProfitLossPercent]);
+  }, [totalValue, totalCost, totalGain, totalGainPercent]);
 
   const pieData = useMemo(() => {
     return portfolio.map((item) => ({
