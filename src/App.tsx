@@ -12,8 +12,10 @@ import StockDetails from "./pages/StockDetails";
 import Simulator from "./pages/Simulator";
 import Features from "./pages/Features";
 import Terms from "./pages/Terms";
-import Telegram from "./pages/Telegram";
 import Learn from "./pages/Learn";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Bot from "./pages/Bot";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,9 +33,15 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/stock/:symbol" element={<StockDetails />} />
             <Route path="/simulator" element={<Simulator />} />
-            <Route path="/learn" element={<Learn />} />
+            <Route path="/analysis" element={<Features />} />
+            <Route path="/guide" element={<Learn />} />
+            <Route path="/masterclasses" element={<Learn />} />
+            <Route path="/community" element={<Learn />} />
             <Route path="/terms" element={<Terms />} />
-            <Route path="/telegram" element={<Telegram />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/bot" element={<Bot />} />
+            <Route path="/profile" element={<Dashboard />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
