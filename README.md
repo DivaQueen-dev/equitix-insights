@@ -1,2 +1,2 @@
 ## Equitix
-Stock Market
+Stock Market Analyser 
