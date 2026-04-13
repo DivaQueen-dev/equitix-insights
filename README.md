@@ -1,2 +1,2 @@
 ## Equitix
-Stock Market Analyser 
+Stock Market Analyser with n8n
